@@ -7,7 +7,11 @@ import SubmitOrder from "./SubmitOrder";
 
 function Cart(props) {
   const [order, setOrder] = useState(false);
-
+  const [submittingOrNot, setSubmittingOrNot] = useState(
+    <React.Fragment>
+      <p>Відправка Ваших даних...</p>
+    </React.Fragment>
+  );
   const [orderIsSubmitting, setOrderIsSubmitting] = useState(false);
   const [orderIsSubmitted, setOrderIsSubmitted] = useState(false);
 
@@ -26,16 +30,32 @@ function Cart(props) {
 
   const submitOrder = async function (userData) {
     setOrderIsSubmitting(true);
-    await fetch("https://lab4-orders-default-rtdb.firebaseio.com/orders.json", {
-      method: "POST",
-      body: JSON.stringify({
-        user: userData,
-        orderedMeals: cartContext.items,
-      }),
-    });
-    setOrderIsSubmitting(false);
-    setOrderIsSubmitted(true);
-    cartContext.clearItem();
+    try {
+      const response = await fetch(
+        "https://lab4-orders-default-rtdb.firebaseio.com/orders.json",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            user: userData,
+            orderedMeals: cartContext.items,
+          }),
+        }
+      );
+      if (response.ok !== true) {
+        setSubmittingOrNot(
+          <React.Fragment>
+            <p>Щось пішло не так...</p>
+          </React.Fragment>
+        );
+        console.error("Enything wrong");
+      } else {
+        setOrderIsSubmitting(false);
+        setOrderIsSubmitted(true);
+        cartContext.clearItem();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const cartItems = (
@@ -85,11 +105,6 @@ function Cart(props) {
     </React.Fragment>
   );
 
-  const submittingModalWindow = (
-    <React.Fragment>
-      <p>Відправка Ваших даних...</p>
-    </React.Fragment>
-  );
   const subtittedModalWindow = (
     <React.Fragment>
       <p>Ваше замовлення відправлено, чекайте дзвінка оператора!</p>
@@ -104,7 +119,7 @@ function Cart(props) {
   return (
     <Modal modalHandler={props.modalHandler}>
       {!orderIsSubmitting && !orderIsSubmitted && modalContent}
-      {orderIsSubmitting && submittingModalWindow}
+      {orderIsSubmitting && submittingOrNot}
       {orderIsSubmitted && subtittedModalWindow}
     </Modal>
   );
