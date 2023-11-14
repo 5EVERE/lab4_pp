@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef } from "react";
 import styles from "./SubmitOrder.module.css";
 
 const isInputValid = (inputValue) => inputValue.trim() !== "";
@@ -9,7 +9,6 @@ function SubmitOrder(props) {
     city: true,
     address: true,
   });
-
   const nameInputRef = useRef();
   const cityInputRef = useRef();
   const addressInputRef = useRef();

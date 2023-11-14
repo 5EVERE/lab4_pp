@@ -33,7 +33,7 @@ const DUMMY_MEALS = [
   },
 ];
 
-function MealList(props) {
+function MealList() {
   const mealList = DUMMY_MEALS.map((meal) => (
     <MealItem
       id={meal.id}
